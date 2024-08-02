@@ -22,4 +22,10 @@ public class ScoreboardServiceImpl implements ScoreboardService{
     public List<Match> getMatchesSummary() {
         return null;
     }
+
+    @Override
+    public Score getActualScore(String match) {
+        return null;
+    }
+
 }

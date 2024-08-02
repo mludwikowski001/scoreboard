@@ -11,4 +11,6 @@ public interface ScoreboardService {
     void finishMatch(String match);
 
     List<Match> getMatchesSummary();
+
+    Score getActualScore(String match);
 }

@@ -1,10 +1,9 @@
 package org.example;
 
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import lombok.Getter;
 
 import java.time.Instant;
-
+@Getter
 public class Match {
 
     private final String homeTeam;
