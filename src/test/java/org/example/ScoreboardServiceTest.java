@@ -2,6 +2,7 @@ package org.example;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +29,8 @@ class ScoreboardServiceTest {
     @Test
     void updateOngoingMatchScore(){
 
+        scoreboardService.startMatch("homeTeam", "awayTeam");
+
         Score newScore = new Score(2,0);
 
         scoreboardService.updateScore("match", newScore);
@@ -44,11 +47,33 @@ class ScoreboardServiceTest {
     @Test
     void updateAlreadyFinishedMatch(){
 
+        scoreboardService.startMatch("homeTeam", "awayTeam");
+        scoreboardService.finishMatch("match");
+
         Score newScore = new Score(2,0);
 
         assertThrows(MatchNonExistsException.class, () -> scoreboardService.updateScore("match", newScore));
 
-        scoreboardService.updateScore("match", newScore);
+
+    }
+
+    @Test
+    void finishOngoingMatchMatch(){
+
+        scoreboardService.startMatch("homeTeam", "awayTeam");
+
+        scoreboardService.finishMatch("match");
+
+        Mockito.verify(scoreboardService).finishMatch("match");
+
+    }
+
+    @Test
+    void finishAlreadyFinishedMatch(){
+
+        Score newScore = new Score(2,0);
+
+        assertThrows(MatchNonExistsException.class, () -> scoreboardService.finishMatch("match");
 
     }
 
