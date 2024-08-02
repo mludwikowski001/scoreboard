@@ -1,4 +1,4 @@
 package org.example;
 
-public class MatchHasBeenAlreadyStartedException extends Exception {
+public class MatchHasBeenAlreadyStartedException extends RuntimeException {
 }
