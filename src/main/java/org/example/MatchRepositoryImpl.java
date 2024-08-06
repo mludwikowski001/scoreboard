@@ -1,6 +1,7 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +17,7 @@ public class MatchRepositoryImpl implements MatchRepository{
 
     @Override
     public void updateMatch(Match match) {
-        matchList.removeIf(m -> StringUtils.equalsIgnoreCase(m.getName(), match.getName()));
+        matchList.removeIf(m ->m.getName().equalsIgnoreCase(match.getName()));
         addMatch(match);
 
     }
@@ -24,13 +25,18 @@ public class MatchRepositoryImpl implements MatchRepository{
     @Override
     public void removeMatch(String team) {
         Match match = getMatchByTeam(team).orElseThrow(MatchNonExistsException::new);
-        matchList.removeIf(m -> StringUtils.equalsIgnoreCase(m.getName(), match.getName()));
+        matchList.remove(match);
 
     }
 
     @Override
     public Optional<Match> getMatchByTeam(String team) {
         return matchList.stream().filter(match -> match.getHomeTeam().equalsIgnoreCase(team) || match.getAwayTeam().equalsIgnoreCase(team)).findAny();
+    }
+
+    @Override
+    public List<Match> showMatchesOrderedByTotalScoreAndStartTime() {
+        return matchList.stream().sorted((Comparator.comparing(Match::getTotalScore).reversed()).thenComparing(Comparator.comparing(Match::getStartTime).reversed())).toList();
     }
 
 

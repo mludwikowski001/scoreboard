@@ -31,4 +31,8 @@ public class Match {
     public String getName(){
         return homeTeam+awayTeam;
     }
+
+    public int getTotalScore(){
+        return score.getHomeTeamScore() + score.getAwayTeamScore();
+    }
 }

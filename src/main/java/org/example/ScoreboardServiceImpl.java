@@ -46,7 +46,7 @@ public class ScoreboardServiceImpl implements ScoreboardService {
 
     @Override
     public List<Match> showScoreboard() {
-        return null;
+        return matchRepository.showMatchesOrderedByTotalScoreAndStartTime();
     }
 
 }
