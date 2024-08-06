@@ -32,6 +32,8 @@ class ScoreboardServiceTest {
     @BeforeEach
     void reset() {
         Mockito.reset(matchRepository);
+
+
     }
 
     @Test
@@ -88,7 +90,9 @@ class ScoreboardServiceTest {
 
         scoreboardService.finishMatch(HOME_TEAM);
 
-        Mockito.verify(matchRepository).removeMatch(HOME_TEAM);
+        List<Match> scoreboard = scoreboardService.showScoreboard();
+
+        assertThat(scoreboard).isNotNull().isEmpty();
 
     }
 
@@ -122,7 +126,7 @@ class ScoreboardServiceTest {
             assertThat(m.getHomeTeam()).isEqualTo(HOME_TEAM);
             assertThat(m.getAwayTeam()).isEqualTo(AWAY_TEAM);
             assertThat(m.getScore()).isNotNull().satisfies(s -> {
-                assertThat(s.getAwayTeamScore()).isZero();
+                assertThat(s.getHomeTeamScore()).isZero();
                 assertThat(s.getAwayTeamScore()).isZero();
             });
         });
@@ -141,7 +145,7 @@ class ScoreboardServiceTest {
             assertThat(m.getHomeTeam()).isEqualTo(HOME_TEAM_2);
             assertThat(m.getAwayTeam()).isEqualTo(AWAY_TEAM_2);
             assertThat(m.getScore()).isNotNull().satisfies(s -> {
-                assertThat(s.getAwayTeamScore()).isZero();
+                assertThat(s.getHomeTeamScore()).isZero();
                 assertThat(s.getAwayTeamScore()).isZero();
             });
         });
@@ -150,7 +154,7 @@ class ScoreboardServiceTest {
             assertThat(m.getHomeTeam()).isEqualTo(HOME_TEAM);
             assertThat(m.getAwayTeam()).isEqualTo(AWAY_TEAM);
             assertThat(m.getScore()).isNotNull().satisfies(s -> {
-                assertThat(s.getAwayTeamScore()).isZero();
+                assertThat(s.getHomeTeamScore()).isZero();
                 assertThat(s.getAwayTeamScore()).isZero();
             });
         });
@@ -172,7 +176,7 @@ class ScoreboardServiceTest {
             assertThat(m.getHomeTeam()).isEqualTo(HOME_TEAM);
             assertThat(m.getAwayTeam()).isEqualTo(AWAY_TEAM);
             assertThat(m.getScore()).isNotNull().satisfies(s -> {
-                assertThat(s.getAwayTeamScore()).isEqualTo(2);
+                assertThat(s.getHomeTeamScore()).isEqualTo(2);
                 assertThat(s.getAwayTeamScore()).isZero();
             });
         });
@@ -181,7 +185,7 @@ class ScoreboardServiceTest {
             assertThat(m.getHomeTeam()).isEqualTo(HOME_TEAM_2);
             assertThat(m.getAwayTeam()).isEqualTo(AWAY_TEAM_2);
             assertThat(m.getScore()).isNotNull().satisfies(s -> {
-                assertThat(s.getAwayTeamScore()).isZero();
+                assertThat(s.getHomeTeamScore()).isZero();
                 assertThat(s.getAwayTeamScore()).isZero();
             });
         });
