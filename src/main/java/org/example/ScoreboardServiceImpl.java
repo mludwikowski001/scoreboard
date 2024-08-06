@@ -40,11 +40,6 @@ public class ScoreboardServiceImpl implements ScoreboardService {
     }
 
     @Override
-    public List<Match> getMatchesSummary() {
-        return null;
-    }
-
-    @Override
     public Score getActualScore(String match) {
         return matchRepository.getMatchByTeam(match).stream().findAny().map(Match::getScore).orElseThrow(MatchNonExistsException::new);
     }
