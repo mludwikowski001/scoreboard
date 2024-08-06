@@ -49,4 +49,9 @@ public class ScoreboardServiceImpl implements ScoreboardService {
         return matchRepository.getMatchByTeam(match).stream().findAny().map(Match::getScore).orElseThrow(MatchNonExistsException::new);
     }
 
+    @Override
+    public List<Match> showScoreboard() {
+        return null;
+    }
+
 }
