@@ -1,7 +1,10 @@
 package org.example;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -11,31 +14,46 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(MockitoExtension.class)
 class ScoreboardServiceTest {
 
-    private ScoreboardService scoreboardService = new ScoreboardServiceImpl();
+    public static final String HOME_TEAM = "homeTeam";
+    public static final String AWAY_TEAM = "awayTeam";
+
+    public static final String MATCH_NAME = HOME_TEAM+AWAY_TEAM;
+    @Mock
+    MatchRepository matchRepository = new MatchRepositoryImpl();
+
+    @InjectMocks
+    private ScoreboardService scoreboardService = new ScoreboardServiceImpl(matchRepository);
+
+    @BeforeEach
+    void reset(){
+        Mockito.reset(matchRepository);
+    }
     @Test
     void startCorrectMatch(){
 
-        boolean result = scoreboardService.startMatch("homeTeam", "awayTeam");
-        assertThat(result).isTrue();
+        String result = scoreboardService.startMatch(HOME_TEAM, AWAY_TEAM);
+        assertThat(result).isNotBlank().isEqualTo(MATCH_NAME);
 
     }
 
     @Test
     void startOngoingMatch(){
 
-        assertThrows(MatchHasBeenAlreadyStartedException.class, () ->scoreboardService.startMatch("homeTeam", "awayTeam"));
+        scoreboardService.startMatch(HOME_TEAM, AWAY_TEAM);
+
+        assertThrows(MatchHasBeenAlreadyStartedException.class, () ->scoreboardService.startMatch(HOME_TEAM, AWAY_TEAM));
     }
 
     @Test
     void updateOngoingMatchScore(){
 
-        scoreboardService.startMatch("homeTeam", "awayTeam");
+        scoreboardService.startMatch(HOME_TEAM, AWAY_TEAM);
 
         Score newScore = new Score(2,0);
 
-        scoreboardService.updateScore("match", newScore);
+        scoreboardService.updateScore(HOME_TEAM, newScore);
 
-        Score actualScore = scoreboardService.getActualScore("match");
+        Score actualScore = scoreboardService.getActualScore(HOME_TEAM);
 
         assertThat(actualScore).isNotNull().satisfies(as ->{
             assertThat(as.getHomeTeamScore()).isEqualTo(newScore.getHomeTeamScore());
@@ -47,33 +65,35 @@ class ScoreboardServiceTest {
     @Test
     void updateAlreadyFinishedMatch(){
 
-        scoreboardService.startMatch("homeTeam", "awayTeam");
-        scoreboardService.finishMatch("match");
+        scoreboardService.startMatch(HOME_TEAM, AWAY_TEAM);
+        scoreboardService.finishMatch(HOME_TEAM);
 
         Score newScore = new Score(2,0);
 
-        assertThrows(MatchNonExistsException.class, () -> scoreboardService.updateScore("match", newScore));
+        assertThrows(MatchNonExistsException.class, () -> scoreboardService.updateScore(MATCH_NAME, newScore));
 
 
     }
 
     @Test
-    void finishOngoingMatchMatch(){
+    void finishOngoingMatch(){
 
-        scoreboardService.startMatch("homeTeam", "awayTeam");
+        scoreboardService.startMatch(HOME_TEAM, AWAY_TEAM);
 
-        scoreboardService.finishMatch("match");
+        scoreboardService.finishMatch(HOME_TEAM);
 
-        Mockito.verify(scoreboardService).finishMatch("match");
+        Mockito.verify(matchRepository).removeMatch(HOME_TEAM);
 
     }
 
     @Test
     void finishAlreadyFinishedMatch(){
 
-        Score newScore = new Score(2,0);
+        scoreboardService.startMatch(HOME_TEAM, AWAY_TEAM);
 
-        assertThrows(MatchNonExistsException.class, () -> scoreboardService.finishMatch("match");
+        scoreboardService.finishMatch(HOME_TEAM);
+
+        assertThrows(MatchNonExistsException.class, () -> scoreboardService.finishMatch(MATCH_NAME));
 
     }
 

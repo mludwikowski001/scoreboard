@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface ScoreboardService {
 
-    boolean startMatch(String homeTeam, String AwayTeam);
+    String startMatch(String homeTeam, String AwayTeam);
 
     void updateScore(String match, Score score);
 

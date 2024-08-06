@@ -1,20 +1,41 @@
 package org.example;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 
-public class ScoreboardServiceImpl implements ScoreboardService{
+@RequiredArgsConstructor
+public class ScoreboardServiceImpl implements ScoreboardService {
+
+    private final MatchRepository matchRepository;
+
     @Override
-    public boolean startMatch(String homeTeam, String AwayTeam) {
-        return false;
+    public String startMatch(String homeTeam, String awayTeam) {
+        Match match = new Match(homeTeam, awayTeam);
+        checkMatchIsNotStartedAlready(homeTeam, awayTeam);
+        matchRepository.addMatch(match);
+        return match.getName();
+    }
+
+    private void checkMatchIsNotStartedAlready(String homeTeam, String awayTeam) {
+
+
+        if (matchRepository.getMatchByTeam(homeTeam).or(() -> matchRepository.getMatchByTeam(awayTeam)).isPresent()) {
+            throw new MatchHasBeenAlreadyStartedException();
+        }
     }
 
     @Override
-    public void updateScore(String match, Score score) {
+    public void updateScore(String matchName, Score score) {
 
+        Match match = matchRepository.getMatchByTeam(matchName).orElseThrow(MatchNonExistsException::new);
+        match.updateScore(score);
+        matchRepository.updateMatch(match);
     }
 
     @Override
     public void finishMatch(String match) {
+        matchRepository.removeMatch(match);
 
     }
 
@@ -25,7 +46,7 @@ public class ScoreboardServiceImpl implements ScoreboardService{
 
     @Override
     public Score getActualScore(String match) {
-        return null;
+        return matchRepository.getMatchByTeam(match).stream().findAny().map(Match::getScore).orElseThrow(MatchNonExistsException::new);
     }
 
 }
